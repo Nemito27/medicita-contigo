@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Medicita Contigo">
+  <defs>
+    <linearGradient id="heart" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#9dca9d"/><stop offset="1" stop-color="#5c9f80"/></linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#e7eedc"/>
+  <path d="M256 400C226 383 95 300 95 203c0-56 39-94 88-94 34 0 59 16 73 44 14-28 39-44 73-44 49 0 88 38 88 94 0 97-131 180-161 197Z" fill="url(#heart)" stroke="#155d45" stroke-width="8" stroke-linejoin="round"/>
+  <path d="M245 178h24v22h22v24h-22v22h-24v-22h-22v-24h22Z" fill="#fffef9"/>
+  <ellipse cx="204" cy="277" rx="12" ry="17" fill="#173c30"/>
+  <ellipse cx="308" cy="277" rx="12" ry="17" fill="#173c30"/>
+  <path d="M237 305q19 18 38 0" fill="none" stroke="#173c30" stroke-width="9" stroke-linecap="round"/>
+  <ellipse cx="177" cy="303" rx="18" ry="10" fill="#fbe4d1" opacity=".9"/>
+  <ellipse cx="335" cy="303" rx="18" ry="10" fill="#fbe4d1" opacity=".9"/>
+</svg>

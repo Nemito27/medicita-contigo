@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+web/config.local.js
+*.log
+
+# Internal task coordination; published architecture is in docs/.
+CONTRACT.md
