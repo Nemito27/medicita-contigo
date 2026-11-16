@@ -7,12 +7,12 @@ La tabla distingue código preparado, configuración externa y verificación. Un
 | Fase | Entrega y criterio | Estado de verificación |
 |---|---|---|
 | 1. Proyecto independiente | Copia y configuración propias, sin usar el backend anterior | Repositorio nuevo creado; compilación aprobada, 6 comprobaciones de aislamiento y migración aplicada solo al Supabase nuevo |
-| 2. Interfaz | Bienvenida, paciente, personal, móvil, ayuda y accesibilidad | Implementada; matriz inicial de 97 comprobaciones en Chromium, seis anchos de 320 a 1440 px |
+| 2. Interfaz | Bienvenida, paciente, personal, móvil, ayuda y accesibilidad | Implementada; 110 comprobaciones en Chromium, seis anchos de 320 a 1440 px |
 | 3. Reservas | Estados, duración variable, cancelación y cambio atómico | Implementada; suite de 21 pruebas de PostgreSQL aprobada, con permisos y operaciones críticas |
 | 4. Recuperación | Preferencias, candidatos, ofertas, respuesta, vencimiento y auditoría | Implementada; recorrido completo en navegador y 13 pruebas del adaptador ficticio aprobadas |
-| 5. Comunicación | Avisos internos, lectura, preferencias y mantenimiento idempotente | Implementada y probada; ejecución periódica remota se registra separadamente en PRUEBAS |
+| 5. Comunicación | Avisos internos, lectura, preferencias y mantenimiento idempotente | Implementada y probada; tarea de servidor activa cada cinco minutos en el proyecto nuevo |
 | 6. Administración | Agenda, recursos, permisos, cancelaciones, métricas y CSV | Implementada; roles y agregados comprobados, exportación CSV sin identidades en el recorrido de navegador |
-| 7. Calidad/publicación | Pruebas, navegación móvil, documentación, demo y publicación nueva | Compilación y suites aprobadas; publicación, primer ingreso real y dispositivos físicos tienen estados propios en PRUEBAS |
+| 7. Calidad/publicación | Pruebas, navegación móvil, documentación, demo y publicación nueva | 53 pruebas y compilación aprobadas; Pages configurado para GitHub Actions. Primera publicación, ingreso real y dispositivos físicos tienen estados propios en PRUEBAS |
 
 ## Pacientes
 
@@ -34,7 +34,7 @@ Un cupo liberado, uno reasignado y uno recuperado efectivamente se muestran como
 | Google | Proveedor activo y redirección inicial al cliente nuevo verificada; primer ingreso/cierre real todavía pendiente |
 | Enlace de acceso por correo | Desactivado por defecto; requiere SMTP, destinatarios y límites reales de Supabase Auth |
 | Avisos internos | Implementados y probados; se consultan desde la cuenta y no significan envío externo |
-| Recordatorios programados | Mantenimiento idempotente probado; el estado de la tarea remota se registra en PRUEBAS |
+| Recordatorios programados | Mantenimiento idempotente probado y tarea de servidor activa cada cinco minutos; son avisos internos |
 | Correo de recordatorio, SMS, WhatsApp | Integraciones opcionales/futuras; no se anuncian como enviadas |
 | Escaneo QR por cámara | Sujeto a API y permiso del navegador; ingreso manual siempre disponible |
 | Instalación PWA | Sujeta a soporte del navegador; no implica reservas offline |

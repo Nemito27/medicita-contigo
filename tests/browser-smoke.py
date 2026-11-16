@@ -7,6 +7,7 @@ No real accounts, original project, or remote writes are used.
 """
 import json
 import os
+import shutil
 import traceback
 from pathlib import Path
 from datetime import datetime, timedelta
@@ -14,7 +15,7 @@ from zoneinfo import ZoneInfo
 from playwright.sync_api import sync_playwright
 
 BASE = os.environ.get('CONTIGO_QA_URL', 'http://127.0.0.1:5174/')
-OUT = Path(os.environ.get('CONTIGO_QA_OUTPUT', '/workspace/work/contigo-browser-qa'))
+OUT = Path(os.environ.get('CONTIGO_QA_OUTPUT', str(Path(__file__).resolve().parents[1] / 'work' / 'browser-qa')))
 OUT.mkdir(parents=True, exist_ok=True)
 KEY = 'medicita-contigo-demo-v2'
 report = {'base': BASE, 'browser': 'Chromium headless', 'flow': {}, 'responsive': [], 'errors': [], 'limitations': ['No physical devices, real Google login, live two-account browser flow, screen reader, or WCAG certification.']}
@@ -90,7 +91,8 @@ def inspect(page, label, width):
 
 
 with sync_playwright() as p:
-    browser = p.chromium.launch(executable_path='/usr/bin/chromium', headless=True, args=['--no-sandbox'])
+    executable = os.environ.get('CONTIGO_CHROMIUM_PATH') or shutil.which('chromium') or shutil.which('chromium-browser')
+    browser = p.chromium.launch(executable_path=executable, headless=True, args=['--no-sandbox'])
     context = browser.new_context(viewport={'width': 1440, 'height': 1000}, reduced_motion='reduce')
     page = context.new_page()
     page.set_default_timeout(10000)

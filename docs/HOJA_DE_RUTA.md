@@ -6,10 +6,10 @@ El núcleo está implementado y el recorrido de cancelación, oferta, aceptació
 
 ## Activación externa
 
-- Publicar únicamente desde el repositorio nuevo ya creado y comprobar el resultado de Pages.
+- Comprobar el siguiente despliegue del repositorio nuevo: Pages ya está configurado para GitHub Actions; falta verificar su primera publicación y recursos servidos.
 - La migración inicial está aplicada y Google está habilitado únicamente en el nuevo Supabase; comprobar el primer ingreso y la asignación explícita del administrador.
 - Verificar dos cuentas reales y permisos con navegación, no solo con SQL.
-- Habilitar mantenimiento de servidor y observar generación/expiración idempotente.
+- Observar las ejecuciones del mantenimiento de servidor ya activo y comprobar sus resultados con cuentas nuevas y preferencias reales.
 - Definir soporte, respaldo, restauración, retención y derechos sobre datos antes de un piloto.
 
 ## Próximas mejoras

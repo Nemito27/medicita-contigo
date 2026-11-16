@@ -1,0 +1,22 @@
+{
+  "flow": {
+    "cancellation": "passed",
+    "supervised_offer": "passed",
+    "atomic_acceptance": "passed",
+    "accepted_is_not_attended": "passed",
+    "arrival_completion_recovery": "passed",
+    "aggregate_csv": "passed",
+    "supervisor_privacy": "passed"
+  },
+  "responsive_page_viewport_checks": 110,
+  "layout_failures": 0,
+  "small_buttons": 0,
+  "console_page_errors": [],
+  "additional": {
+    "qr_320_no_overflow": true,
+    "native_modal_focus_contained": true,
+    "profile_xss_escaped": true,
+    "invalid_phone_draft_preserved": true
+  },
+  "screenshot_warnings": []
+}

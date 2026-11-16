@@ -2,16 +2,18 @@
 
 ## Estado del destino
 
-El repositorio público independiente [Nemito27/medicita-contigo](https://github.com/Nemito27/medicita-contigo) ya existe. El destino de Pages aún requiere confirmar la publicación y comprobar su respuesta; no se presenta una dirección prevista como un despliegue terminado. No usar la URL de Medicita original como destino de esta entrega.
+El código ya está subido al repositorio público independiente [Nemito27/medicita-contigo](https://github.com/Nemito27/medicita-contigo); primer commit de fuente: `b6015f6`. GitHub Pages está configurado con **GitHub Actions** como origen, confirmado mediante la API del repositorio nuevo. La primera publicación con esa configuración está pendiente de comprobar; no se presenta una dirección prevista como un despliegue terminado. No usar la URL de Medicita original como destino de esta entrega.
 
 La conexión no permitió crear el repositorio y el propietario lo creó vacío. Esa restricción no se resolvió escribiendo en el repositorio original. El remoto del checkout nuevo apunta exclusivamente a `Nemito27/medicita-contigo`.
+
+La activación inicial de Pages por API fue rechazada con HTTP 403, `Resource not accessible by integration`. El propietario resolvió ese paso eligiendo **GitHub Actions** en [Settings → Pages del repositorio nuevo](https://github.com/Nemito27/medicita-contigo/settings/pages). No sigue pendiente volver a habilitarlo. La primera CI aprobó pruebas y compilación, pero su publicación falló antes de que Pages estuviera configurado; un nuevo commit ejecuta el workflow con la configuración actual. Ninguno de estos pasos modifica Medicita original.
 
 ## GitHub Actions y Pages
 
 1. Confirmar que el remoto del checkout corresponde al repositorio nuevo.
 2. Subir el código, lockfile, pruebas y workflow; excluir `.env`, `node_modules`, `dist`, secretos y datos personales.
 3. La configuración pública del proyecto nuevo está en `web/src/config/public-project.json`. Las variables de Actions `VITE_SUPABASE_URL` y `VITE_SUPABASE_PUBLISHABLE_KEY` son opcionales para sustituir esos valores; no son necesarias para construir esta entrega. La conexión rechazó escribir esas variables, sin bloquear el uso de la configuración pública propia. No colocar secretos de Google ni claves privilegiadas allí.
-4. Elegir GitHub Actions como origen de Pages en Settings → Pages.
+4. Comprobar GitHub Actions como origen de Pages en Settings → Pages; ya está configurado en este repositorio.
 5. El workflow verifica `npm ci`, `npm test`, `npm run build` y prepara `dist`. Solo publica desde `main`, no desde una solicitud de cambios.
 6. Esperar el estado de éxito del trabajo de publicación y comprobar HTTP 200 y los recursos servidos en la URL devuelta.
 7. Registrar esa URL exacta en el nuevo proyecto Supabase y comprobar inicio/cierre de sesión. No asumir que el despliegue activa Google.

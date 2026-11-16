@@ -64,7 +64,7 @@ La selección de candidatos considera servicio, rango, días, jornada, conflicto
 
 Las ofertas vencidas dejan de impedir el uso del cupo según la hora del servidor. El mantenimiento idempotente genera avisos y procesa vencimientos; su ejecución periódica debe configurarse en el proyecto nuevo. Consultar una página o ejecutar un temporizador del navegador no sustituye una tarea programada del servidor.
 
-`supabase/cron.sql` prepara el trabajo de servidor `medicita-contigo-maintenance` cada cinco minutos. Su activación y las ejecuciones observadas se registran en [PRUEBAS](PRUEBAS.md); disponer del archivo no significa que el trabajo esté activo. `public.run_maintenance()` está reservado al contexto de servidor, no a pacientes ni al selector de personajes de demostración.
+`supabase/cron.sql` configura el trabajo de servidor `medicita-contigo-maintenance` cada cinco minutos. Está activo en el proyecto nuevo; las ejecuciones observadas se registran en [PRUEBAS](PRUEBAS.md). `public.run_maintenance()` está reservado al contexto de servidor, no a pacientes ni al selector de personajes de demostración.
 
 Los avisos implementados son internos. Correo de acceso y recordatorios externos son sistemas distintos. Los adaptadores de correo, SMS o WhatsApp requieren proveedor, consentimiento, credenciales de servidor y verificación de entrega antes de anunciarse como activos.
 

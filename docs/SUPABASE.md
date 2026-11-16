@@ -36,6 +36,14 @@ La migración inicial `20261116033253_contigo.sql` ya está instalada aquí: **n
 
 El seed, si se utiliza, contiene solo datos explícitamente ficticios. La presentación reproducible del navegador no necesita insertar usuarios de prueba en un backend real.
 
+## Mantenimiento instalado
+
+La extensión `pg_cron` y el trabajo `medicita-contigo-maintenance` están activos en este proyecto nuevo, con programación `*/5 * * * *`. Ejecutan `public.run_maintenance()` desde el servidor para generar recordatorios internos y procesar vencimientos. El historial de aplicación queda en `public.system_runs` y el del programador en `cron.job_run_details`, accesibles al propietario, no al navegador público.
+
+La función es idempotente: no duplica un recordatorio por repetir la tarea. Las consultas de disponibilidad verifican la expiración de las ofertas directamente, de modo que una oferta vencida no bloquea un cupo permanentemente aunque una ejecución se retrase. El resultado de ejecuciones observadas se documenta en [PRUEBAS](PRUEBAS.md).
+
+La ejecución manual de comprobación finalizó sin error y registró cero ofertas vencidas y cero avisos internos en la base vacía. Esto verifica la ejecución de la tarea; todavía no acredita la recepción de recordatorios por usuarios reales.
+
 ## Google OAuth nuevo
 
 El proveedor Google ya está habilitado con un cliente separado. Los siguientes pasos permiten revisar o reproducir su configuración, sin alterar el cliente OAuth de Medicita original:

@@ -39,9 +39,11 @@ El proyecto Supabase nuevo se llama **Medicita Contigo**, en la región São Pau
 
 El flujo central es: **cancelar → liberar el cupo → revisar candidatos compatibles → ofrecer → aceptar → registrar llegada y atención**. Este recorrido pasó en Chromium con datos ficticios. El informe muestra una reasignación al aceptar y cuenta el cupo como recuperado únicamente después de que otra persona complete la atención.
 
-Están implementados los estados de reservas, duración variable, cambio atómico, preferencias de espera, avisos internos, perfiles y accesibilidad, QR con alternativa manual, agenda, recursos, permisos por rol, indicadores y CSV. La interfaz pasó una matriz inicial de 97 comprobaciones en seis anchos, de 320 a 1440 px; esto no equivale a probar todos los navegadores o dispositivos físicos.
+Están implementados los estados de reservas, duración variable, cambio atómico, preferencias de espera, avisos internos, perfiles y accesibilidad, QR con alternativa manual, agenda, recursos, permisos por rol, indicadores y CSV. Pasaron **53 pruebas automatizadas**, la compilación y **110 comprobaciones de interfaz en Chromium**, en seis anchos de 320 a 1440 px. Esto no equivale a probar todos los navegadores o dispositivos físicos.
 
-El repositorio nuevo es [Nemito27/medicita-contigo](https://github.com/Nemito27/medicita-contigo). La publicación y el ingreso real se registran por separado en [DESPLIEGUE](docs/DESPLIEGUE.md) y [PRUEBAS](docs/PRUEBAS.md). Google aparece activo y su redirección inicial lleva al cliente nuevo, pero ese dato por sí solo no acredita un recorrido de ingreso/cierre de sesión ni un administrador asignado.
+El mantenimiento de servidor está configurado cada cinco minutos en el proyecto nuevo; los recordatorios son internos. La revisión de dependencias, incluidas las de desarrollo, informó cero vulnerabilidades en la ejecución registrada.
+
+El repositorio nuevo es [Nemito27/medicita-contigo](https://github.com/Nemito27/medicita-contigo). Pages ya está configurado para GitHub Actions; la primera publicación con esa configuración y el ingreso real se registran por separado en [DESPLIEGUE](docs/DESPLIEGUE.md) y [PRUEBAS](docs/PRUEBAS.md). Google aparece activo y su redirección inicial lleva al cliente nuevo, pero ese dato por sí solo no acredita un recorrido de ingreso/cierre de sesión ni un administrador asignado.
 
 Consultar [FUNCIONALIDADES](docs/FUNCIONALIDADES.md) para el alcance y [PRUEBAS](docs/PRUEBAS.md) para resultados y limitaciones comprobados. Correo externo de recordatorios, SMS, WhatsApp e integración institucional no están activos.
 
