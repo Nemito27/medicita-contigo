@@ -14,6 +14,20 @@ La tabla distingue código preparado, configuración externa y verificación. Un
 | 6. Administración | Agenda, recursos, permisos, cancelaciones, métricas y CSV | Implementada; roles y agregados comprobados, exportación CSV sin identidades en el recorrido de navegador |
 | 7. Calidad/publicación | Pruebas, navegación móvil, documentación, demo y publicación nueva | 53 pruebas y compilación aprobadas; Pages configurado para GitHub Actions. Primera publicación, ingreso real y dispositivos físicos tienen estados propios en PRUEBAS |
 
+## Actualización de noviembre de 2026
+
+| Función | Uso y persistencia |
+|---|---|
+| Mis coronitas | Saldo derivado del historial del servidor, niveles, seis misiones, galardones y detalle de movimientos |
+| Personas y coronitas | Administración: todas las cuentas, búsqueda, niveles, orden, historial, ajustes con motivo y corrección auditada |
+| Comunidad | Participación opcional desde perfil; alias, avatar de catálogo, saldo y nivel; sin contactos, reservas ni asistencias |
+| Comentarios | Boxes → Comentarios: autoría, edición durante 24 horas, retiro, respuestas del personal y reportes; validación del servidor y moderación administrativa |
+| Modo visual | Ingreso y perfil; texto e iconos, avisos persistentes y vibración opcional; sincronización explícita de preferencias |
+| Llamados | Personal → Llamados al box, sobre una llegada registrada; recepción, Entendido, ayuda y pantalla pública con turno opaco |
+| Diciembre ficticio | 3–5 de diciembre de 2026, 528 cupos; plantilla aislada en servidor, interacciones de simulación guardadas en el navegador |
+
+La [guía de actualización](ACTUALIZACION_2026_11.md) detalla reglas, mantenimiento y resultados comprobados. Las filas de fases anteriores corresponden a la entrega inicial, no acreditan automáticamente pruebas de los módulos nuevos.
+
 ## Pacientes
 
 El recorrido disponible incluye próxima atención, historial, reserva, confirmación separada, cambio de hora con comparación, No podré asistir, espera editable por disponibilidad, ofertas, QR, avisos, perfil y ayuda. La cancelación explica que afecta solo al registro independiente. Los motivos son opcionales y administrativos.
@@ -31,7 +45,7 @@ Un cupo liberado, uno reasignado y uno recuperado efectivamente se muestran como
 | Función | Condición real |
 |---|---|
 | Demostración | Datos ficticios locales, identificados como simulación |
-| Google | Proveedor activo y redirección inicial al cliente nuevo verificada; primer ingreso/cierre real todavía pendiente |
+| Google | Proveedor activo y cuentas reales existentes; una nueva prueba con dos cuentas Google sigue siendo una comprobación aparte |
 | Enlace de acceso por correo | Desactivado por defecto; requiere SMTP, destinatarios y límites reales de Supabase Auth |
 | Avisos internos | Implementados y probados; se consultan desde la cuenta y no significan envío externo |
 | Recordatorios programados | Mantenimiento idempotente probado y tarea de servidor activa cada cinco minutos; son avisos internos |

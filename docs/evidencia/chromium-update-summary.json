@@ -1,0 +1,82 @@
+{
+  "application": "Medicita Contigo 2.1.0",
+  "checked_at": "2026-11-24T18:09:55-03:00",
+  "source_branch": "feature/coronitas-visual-comunidad",
+  "environment": "Production build served locally by Vite preview; fictional user actions only",
+  "browser": "Chromium 156.0.8078.79 built on Debian GNU/Linux 13 (trixie)",
+  "artifact": {
+    "script": "./assets/index-DoS97BEb.js",
+    "sha256": "d4a8f8e1a6f73f67643b18e81bc31423369d2cbd4c184f5ee3b2b076016fda31"
+  },
+  "automated_node": {
+    "total": 135,
+    "passed": 133,
+    "skipped": 2,
+    "skip_reason": "Original checkout and original protected-file fingerprint fixture are not distributed in this workspace"
+  },
+  "legacy_browser_regression": {
+    "responsive_checks": 110,
+    "reported_by": "Main integration verification; separate historical regression script"
+  },
+  "new_browser": {
+    "groups": 6,
+    "flows": {
+      "rewards_once_per_care_process": {
+        "passed": true,
+        "initial_balance": 18,
+        "after_confirmation_and_reschedule": 20
+      },
+      "community_opt_in_privacy_and_withdrawal": "passed",
+      "administrative_adjustment_visible_in_history": "passed",
+      "comments_alias_counter_report_moderation_and_xss": "passed",
+      "visual_call_two_tabs_draft_audio_free_help_reload_understood": "passed",
+      "visual_call_other_patient_isolation_and_public_opaque_turn": "passed",
+      "attendance_validation_correction_and_restoration_net_once": {
+        "passed": true,
+        "movements": [
+          10,
+          -10,
+          10
+        ]
+      },
+      "visual_preferences_prelogin_and_profile_reload": "passed in local simulation; live preference merge covered separately by unit/SQL tests",
+      "december_dataset_counts_and_isolation": {
+        "passed": true,
+        "days": {
+          "2026-12-03": {
+            "slots": 176,
+            "occupied": 120,
+            "without_appointment": 56
+          },
+          "2026-12-04": {
+            "slots": 176,
+            "occupied": 126,
+            "without_appointment": 50
+          },
+          "2026-12-05": {
+            "slots": 176,
+            "occupied": 114,
+            "without_appointment": 62
+          }
+        },
+        "patients": 120,
+        "technical_actors": 3,
+        "historical_slots": 39
+      },
+      "new_sections_four_viewports_and_modal_focus": "passed"
+    },
+    "responsive_checks": 44,
+    "viewport_widths": [
+      320,
+      390,
+      768,
+      1440
+    ],
+    "failures": [],
+    "javascript_errors": []
+  },
+  "public_dataset_transport": "Actual Supabase HTTPS response forwarded by Python with default certificate verification; managed Chromium does not trust the proxy certificate.",
+  "limitations": [
+    "Fictional browser simulation; no real Google sessions, physical devices, screen reader, background push, or WCAG certification. Live database and permission tests are separate."
+  ]
+}

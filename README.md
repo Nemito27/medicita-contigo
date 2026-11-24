@@ -1,10 +1,18 @@
-# Medicita Contigo 2.0
+# Medicita Contigo 2.1
 
 **Menos horas perdidas, más oportunidades de atención.**
 
 Aplicación independiente de gestión administrativa de reservas, cancelaciones, espera y recuperación de cupos. Conserva la mascota Con Tigo y reutiliza los patrones de reservas y permisos de Medicita con una estructura modular.
 
 Es un prototipo avanzado para evaluación y presentaciones. Actualmente no está conectado con agendas oficiales de CESFAM, Telesalud ni plataformas del Estado. Una reserva o cancelación afecta únicamente a este sistema.
+
+## Actualización de noviembre de 2026
+
+La actualización incorpora **Mis coronitas** (niveles, seis misiones, galardones e historial), **Comunidad** opcional con alias, **Personas y coronitas** para administración, comentarios moderados de boxes y llamados visuales privados con respuesta. Las coronitas son simbólicas y no modifican la prioridad de atención.
+
+La agenda ficticia de los [días 3](https://nemito27.github.io/medicita-contigo/?demo=1&dataset=december-2026&day=2026-12-03), [4](https://nemito27.github.io/medicita-contigo/?demo=1&dataset=december-2026&day=2026-12-04) y [5 de diciembre de 2026](https://nemito27.github.io/medicita-contigo/?demo=1&dataset=december-2026&day=2026-12-05) contiene 528 cupos, 12 profesionales, ocho boxes y 120 pacientes inventados, separados de las cuentas y reservas reales. La plantilla se conserva en el servidor; las acciones de la demostración siguen siendo una simulación persistida en ese navegador.
+
+Consultar [la guía de actualización](docs/ACTUALIZACION_2026_11.md) para rutas, reglas, regeneración, pruebas y estado de publicación. Las cifras de pruebas del 16 de noviembre que aparecen más abajo son evidencia histórica; los resultados de esta actualización se registran por separado.
 
 ## Ejecutar en el computador
 
@@ -33,17 +41,17 @@ npm run preview
 | Backend independiente | Proyecto nuevo de Supabase, usuarios autenticados, permisos y operaciones PostgreSQL |
 | Medicita original | Fuente de código consultada en modo de lectura; no es destino de migraciones ni de publicación |
 
-El proyecto Supabase nuevo se llama **Medicita Contigo**, en la región São Paulo. La migración inicial está instalada y sus 19 tablas públicas tienen RLS. `web/src/config/public-project.json` contiene solo su URL y clave publicable; no contiene secretos ni configuración del backend anterior. `.env.example` conserva valores vacíos para documentar las variables de una instalación local.
+El proyecto Supabase nuevo se llama **Medicita Contigo**, en la región São Paulo. La migración inicial instaló 19 tablas públicas con RLS. Las migraciones aditivas de noviembre amplían ese esquema; su instalación y verificación actuales se registran en la guía de actualización. `web/src/config/public-project.json` contiene solo su URL y clave publicable; no contiene secretos ni configuración del backend anterior. `.env.example` conserva valores vacíos para documentar las variables de una instalación local.
 
 ## Funciones y verificación
 
 El flujo central es: **cancelar → liberar el cupo → revisar candidatos compatibles → ofrecer → aceptar → registrar llegada y atención**. Este recorrido pasó en Chromium con datos ficticios. El informe muestra una reasignación al aceptar y cuenta el cupo como recuperado únicamente después de que otra persona complete la atención.
 
-Están implementados los estados de reservas, duración variable, cambio atómico, preferencias de espera, avisos internos, perfiles y accesibilidad, QR con alternativa manual, agenda, recursos, permisos por rol, indicadores y CSV. Pasaron **53 pruebas automatizadas**, la compilación y **110 comprobaciones de interfaz en Chromium**, en seis anchos de 320 a 1440 px. Esto no equivale a probar todos los navegadores o dispositivos físicos.
+La entrega inicial del 16 de noviembre implementó estados de reservas, duración variable, cambio atómico, preferencias de espera, avisos internos, perfiles y accesibilidad, QR con alternativa manual, agenda, recursos, permisos por rol, indicadores y CSV. Registró **53 pruebas automatizadas**, compilación y **110 comprobaciones de interfaz en Chromium**, en seis anchos de 320 a 1440 px. La versión 2.1 conserva esas funciones y añade las verificaciones documentadas en la guía de actualización. Esto no equivale a probar todos los navegadores o dispositivos físicos.
 
 El mantenimiento de servidor está configurado cada cinco minutos en el proyecto nuevo; los recordatorios son internos. La revisión de dependencias, incluidas las de desarrollo, informó cero vulnerabilidades en la ejecución registrada.
 
-El repositorio nuevo es [Nemito27/medicita-contigo](https://github.com/Nemito27/medicita-contigo). Pages ya está configurado para GitHub Actions; la primera publicación con esa configuración y el ingreso real se registran por separado en [DESPLIEGUE](docs/DESPLIEGUE.md) y [PRUEBAS](docs/PRUEBAS.md). Google aparece activo y su redirección inicial lleva al cliente nuevo, pero ese dato por sí solo no acredita un recorrido de ingreso/cierre de sesión ni un administrador asignado.
+El repositorio nuevo es [Nemito27/medicita-contigo](https://github.com/Nemito27/medicita-contigo). Pages ya está configurado para GitHub Actions; la primera publicación con esa configuración y el ingreso real se registran por separado en [DESPLIEGUE](docs/DESPLIEGUE.md) y [PRUEBAS](docs/PRUEBAS.md). La revisión del 24 de noviembre encontró cuentas y administradores reales en el proyecto. Esto no sustituye una nueva prueba interactiva con dos cuentas Google durante esta actualización.
 
 Consultar [FUNCIONALIDADES](docs/FUNCIONALIDADES.md) para el alcance y [PRUEBAS](docs/PRUEBAS.md) para resultados y limitaciones comprobados. Correo externo de recordatorios, SMS, WhatsApp e integración institucional no están activos.
 
@@ -70,6 +78,7 @@ Consultar [FUNCIONALIDADES](docs/FUNCIONALIDADES.md) para el alcance y [PRUEBAS]
 - [Despliegue separado](docs/DESPLIEGUE.md)
 - [Seguridad y datos personales](docs/SEGURIDAD.md)
 - [Funciones y estado de fases](docs/FUNCIONALIDADES.md)
+- [Actualización de noviembre de 2026](docs/ACTUALIZACION_2026_11.md)
 - [Pruebas](docs/PRUEBAS.md)
 - [Hoja de ruta](docs/HOJA_DE_RUTA.md)
 - [Guion de presentación](docs/PRESENTACION.md)

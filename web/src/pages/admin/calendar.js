@@ -21,6 +21,7 @@ function appointmentActions(ctx, appointment, slot) {
     if (now >= ends + grace * 60000) actions += btn('Registrar ausencia', 'admin-no-show', appointment.id, 'secondary');
     if (starts - now > cancellationNotice * 60000) actions += btn('Liberar hora', 'admin-cancel', appointment.id, 'ghost');
   }
+  if (appointment.status === 'arrived') actions += btn('Llamar al box', 'comm-call', appointment.id, 'secondary');
   if (appointment.status === 'arrived' && now >= starts) actions += btn('Finalizar atención', 'admin-complete', appointment.id);
   return `<div class="actions">${actions}</div>`;
 }

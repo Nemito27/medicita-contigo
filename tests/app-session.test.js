@@ -6,6 +6,7 @@ import {createSessionGate} from '../web/src/services/session.js';
 import {dayKey,addDays} from '../web/src/utils/date.js';
 import {esc,btn,brand,icon} from '../web/src/components/ui.js';
 import {handlePatientSubmit as actualPatientSubmit} from '../web/src/pages/patient.js';
+import {ACCESSIBILITY_KEYS,readAccessibility,mergeAccessibility,persistAccessibility} from '../web/src/services/accessibility.js';
 
 const source=readFileSync(new URL('../web/src/main.js',import.meta.url),'utf8')
   .replace(/^import .*\n/gm,'')
@@ -16,12 +17,12 @@ const snapshot=id=>({user:{id,role:'patient',full_name:id,preferences:{},onboard
 
 function harness({serviceFor=id=>({load:async()=>snapshot(id),rpc:async()=>null}),getSession=async()=>({data:{session:null},error:null}),signOut=async()=>({error:null}),patientSubmit=async()=>false,adminSubmit=async()=>false,valuesForForm=()=>({})}={}){
   let authCallback,currentUser=null,creations=0,reloads=0;
-  const timers=[],events=new Map(),modalEvents=new Map(),storage=new Map();
+  const timers=[],events=new Map(),windowEvents=new Map(),modalEvents=new Map(),storage=new Map();
   const app={innerHTML:'',querySelector:()=>null};
   const modal={open:false,innerHTML:'',addEventListener:(name,callback)=>modalEvents.set(name,callback),close(){this.open=false;},showModal(){this.open=true;},querySelector:()=>null};
   const toast={textContent:''};
   const context=vm.createContext({
-    console,Intl,URL,Date,Promise,createSessionGate,dayKey,addDays,esc,btn,
+    console,Intl,URL,Date,Promise,WeakMap,createSessionGate,dayKey,addDays,esc,btn,ACCESSIBILITY_KEYS,readAccessibility,mergeAccessibility,persistAccessibility,
     A11Y_STORAGE_KEY:'medicita-contigo-a11y-v2',AUTH_STORAGE_KEY:'medicita-contigo-auth-v2',
     config:{configured:true},
     document:{
@@ -29,7 +30,7 @@ function harness({serviceFor=id=>({load:async()=>snapshot(id),rpc:async()=>null}
       querySelectorAll:()=>[],addEventListener:(name,callback)=>events.set(name,callback),
       documentElement:{dataset:{},classList:{toggle(){}}},activeElement:null,visibilityState:'visible',
     },
-    navigator:{onLine:true},window:{addEventListener(){},scrollTo(){}},
+    navigator:{onLine:true},window:{addEventListener:(name,callback)=>windowEvents.set(name,callback),scrollTo(){}},
     location:{href:'https://example.invalid/medicita-contigo/',reload(){reloads++;}},
     history:{replaceState(){}},
     localStorage:{getItem:key=>storage.get(key)??null,setItem:(key,value)=>storage.set(key,String(value)),removeItem:key=>storage.delete(key)},
@@ -37,6 +38,8 @@ function harness({serviceFor=id=>({load:async()=>snapshot(id),rpc:async()=>null}
     landing:({error})=>`login:${error||''}`,shell:({data})=>`account:${data.user.id}`,
     navigation:()=>[['home','Inicio','home'],['profile','Mi perfil','user']],
     renderPatient:()=>'',renderAdmin:()=>'',stopAdminScanner(){},
+    renderRewards:()=>'',renderCommunication:()=>'',renderCallAlerts:()=>'',renderPublicRoom:()=>'',clearCommunicationState(){},
+    handleRewardAction:async()=>false,handleCommunicationAction:async()=>false,handleRewardSubmit:async()=>false,handleCommunicationSubmit:async()=>false,
     handlePatientAction:async()=>false,handleAdminAction:async()=>false,
     handlePatientSubmit:patientSubmit,handleAdminSubmit:adminSubmit,
     errorMessage:error=>String(error.message),formValues:valuesForForm,
@@ -46,7 +49,7 @@ function harness({serviceFor=id=>({load:async()=>snapshot(id),rpc:async()=>null}
   });
   vm.runInContext(source,context,{filename:'actual-main.js'});
   return {
-    context,app,modal,toast,storage,events,
+    context,app,modal,toast,storage,events,windowEvents,
     run:code=>vm.runInContext(code,context),
     auth(event,id){currentUser=id;authCallback(event,id?{user:{id}}:null);},
     fireClose:()=>modalEvents.get('close')?.(),
@@ -153,6 +156,15 @@ test('every rendered navigation control belongs to the role navigation',()=>{
   }
 });
 
+test('fictitious actor names remain plain text in the dynamic presenter selector',()=>{
+  const layoutSource=readFileSync(new URL('../web/src/layouts/app.js',import.meta.url),'utf8').replace(/^import .*\n/gm,'').replace(/^export /gm,'');
+  const context=vm.createContext({brand,icon,btn,esc,badge:()=>'',roleLabels:{patient:'Paciente'},config:{configured:true}});
+  vm.runInContext(layoutSource,context);
+  context.input={data:{user:{role:'patient',full_name:'Persona'},notifications:[],center:{}},page:'home',content:'',prefs:{},demo:true,demoActors:[{id:'patient-a',role:'patient',label:'</option></select><img src=x onerror=window.__contigoXss=1>'}]};
+  const html=vm.runInContext('shell(input)',context);
+  assert.doesNotMatch(html,/<img src=x onerror=/);assert.match(html,/&lt;img src=x onerror=/);
+});
+
 test('a named id input cannot prevent the real cancellation submit from reaching its RPC',async()=>{
   const calls=[];
   const h=harness({
@@ -187,4 +199,84 @@ test('a named id input cannot replace the string dispatched to an administrative
   assert.equal(received.formId,'admin-resource-save');
   assert.equal(typeof received.formId,'string');assert.equal(received.values.id,'resource-a');
   assert.equal(received.form,form);
+});
+
+test('a late private call feed cannot cross an account change',async()=>{
+  const old=deferred();
+  const h=harness({serviceFor:id=>({load:async()=>snapshot(id),getBoxCalls:()=>id==='patient-a'?old.promise:Promise.resolve([{id:'call-b',status:'help'}]),rpc:async()=>null})});
+  h.auth('SIGNED_IN','patient-a');await h.flush();
+  h.auth('SIGNED_IN','patient-b');await h.flush();
+  old.resolve([{id:'private-call-a',status:'pending'}]);await tick();
+  assert.equal(h.run('state.calls[0].id'),'call-b');
+  assert.equal(h.run('state.data.user.id'),'patient-b');
+});
+
+test('call receipt and an understood response preserve an open form and avoid a full snapshot reload',async()=>{
+  let loads=0,status='pending';const calls=[];
+  const h=harness({serviceFor:id=>({
+    load:async()=>{loads++;return snapshot(id);},
+    getBoxCalls:async()=>[{id:'call-own',status}],
+    rpc:async(name,args)=>{calls.push({name,args});status=args.p_response;},
+  })});
+  h.auth('SIGNED_IN','patient-a');await h.flush();
+  assert.equal(status,'received');assert.equal(calls.length,1);
+  h.run("show('Formulario','<form><textarea>Borrador que debe conservarse</textarea></form>');");
+  const markup=h.modal.innerHTML;
+  await h.run("respondCall('call-own','understood')");
+  assert.equal(status,'understood');assert.equal(h.modal.open,true);assert.equal(h.modal.innerHTML,markup);assert.equal(loads,1);
+  assert.deepEqual(calls.map(item=>item.args.p_response),['received','understood']);
+});
+
+test('an explicit pre-login visual choice syncs once without completing a profile or awarding profile points',async()=>{
+  const calls=[];
+  const h=harness({serviceFor:id=>({load:async()=>({...snapshot(id),user:{...snapshot(id).user,preferences:{visual_mode:false,simple_mode:true}}}),rpc:async(name,args)=>calls.push({name,args})})});
+  await h.run("toggleAccessibility('visual_mode')");
+  h.auth('SIGNED_IN','patient-a');await h.flush();
+  assert.equal(h.run('state.prefs.visual_mode'),true);assert.equal(h.run('state.prefs.simple_mode'),true);
+  assert.equal(h.run('state.pendingPrefs.length'),0);
+  assert.deepEqual(JSON.parse(JSON.stringify(calls)),[{name:'save_accessibility_preferences',args:{p_preferences:{visual_mode:true}}}]);
+  assert.equal(JSON.parse(h.storage.get('medicita-contigo-a11y-v2')).visual_mode,true);
+});
+
+test('a new device respects server visual preferences without writing local defaults',async()=>{
+  const calls=[];
+  const h=harness({serviceFor:id=>({load:async()=>({...snapshot(id),user:{...snapshot(id).user,preferences:{visual_mode:true,vibration_enabled:true}}}),rpc:async(name)=>calls.push(name)})});
+  h.auth('SIGNED_IN','patient-a');await h.flush();
+  assert.equal(h.run('state.prefs.visual_mode'),true);assert.equal(h.run('state.prefs.vibration_enabled'),true);assert.equal(calls.length,0);
+});
+
+test('leaving an identity removes its realtime subscription and clears private call state',async()=>{
+  let removed=0;
+  const h=harness({serviceFor:id=>({load:async()=>snapshot(id),getBoxCalls:async()=>[{id:`call-${id}`,status:'help'}],subscribeCalls:()=>()=>{removed++;},rpc:async()=>null})});
+  h.auth('SIGNED_IN','patient-a');await h.flush();assert.equal(h.run('state.calls.length'),1);
+  h.auth('SIGNED_OUT',null);assert.equal(removed,1);assert.equal(h.run('state.calls.length'),0);assert.equal(h.run('state.data'),null);
+});
+
+test('a rejected old-account preference sync cannot restore its calls or notice after identity replacement',async()=>{
+  const old=deferred();
+  const h=harness({serviceFor:id=>({load:async()=>({...snapshot(id),box_calls:[{id:`private-call-${id}`,status:'help'}]}),rpc:()=>id==='patient-a'?old.promise:Promise.resolve()})});
+  h.run("state.pendingPrefs=['visual_mode'];state.prefs.visual_mode=true;");
+  h.auth('SIGNED_IN','patient-a');await h.flush();
+  h.auth('SIGNED_IN','patient-b');await h.flush();
+  old.reject(Error('Old preference save failed'));await tick();
+  assert.equal(h.run('state.data.user.id'),'patient-b');assert.equal(h.run('state.calls[0].id'),'private-call-patient-b');assert.equal(h.run('state.visualNotice'),'');
+});
+
+test('an automatic receipt completing late cannot downgrade an explicit understood response',async()=>{
+  const receipt=deferred();
+  const h=harness({serviceFor:id=>({load:async()=>snapshot(id),getBoxCalls:async()=>[{id:'call-own',status:'pending'}],rpc:async(name,args)=>args.p_response==='received'?receipt.promise:null})});
+  h.auth('SIGNED_IN','patient-a');await h.flush();
+  await h.run("respondCall('call-own','understood')");
+  assert.equal(h.run('state.calls[0].status'),'understood');
+  receipt.resolve();await tick();
+  assert.equal(h.run('state.calls[0].status'),'understood');
+});
+
+test('network changes preserve form drafts while reconnect independently recovers private calls',async()=>{
+  let loads=0,callReads=0;
+  const h=harness({serviceFor:id=>({load:async()=>{loads++;return snapshot(id);},getBoxCalls:async()=>{callReads++;return [];},rpc:async()=>null})});
+  h.auth('SIGNED_IN','patient-a');await h.flush();const initialCallReads=callReads;
+  h.run("show('Formulario','<form><textarea>Borrador sin guardar</textarea></form>');");const markup=h.modal.innerHTML;
+  h.windowEvents.get('offline')();h.windowEvents.get('online')();await tick();
+  assert.equal(h.modal.innerHTML,markup);assert.equal(h.modal.open,true);assert.equal(loads,1);assert.ok(callReads>initialCallReads);
 });

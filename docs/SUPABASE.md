@@ -10,7 +10,7 @@ Proyecto nuevo: **Medicita Contigo**. Referencia: `iqisdeyxlzpxtlbkyero`. Regió
 
 Este proyecto no comparte tablas, usuarios, roles, credenciales ni tareas programadas con la aplicación original. Confirmar visualmente el nombre y la referencia antes de ejecutar cualquier SQL.
 
-La migración inicial ya fue aplicada en este proyecto y se verificaron 19 tablas públicas con RLS. Google aparece activo; el inicio del flujo responde con una redirección a Google, un cliente independiente y el callback nuevo correcto. Todavía falta verificar un ingreso completo de una cuenta, su perfil y el cierre de sesión. No hay usuarios ni administradores reales registrados en la comprobación inicial posterior a la migración.
+La migración inicial fue aplicada en este proyecto y verificó 19 tablas públicas con RLS. La revisión del 24 de noviembre de 2026 encontró siete perfiles reales, incluidos dos administradores, y una reserva confirmada. La base ya no está vacía. Estos registros se conservan; no se publican sus identidades en la documentación. El estado de las migraciones nuevas y su verificación se registra en [Actualización de noviembre](ACTUALIZACION_2026_11.md).
 
 ## Variables del cliente
 
@@ -26,7 +26,7 @@ Las variables `VITE_` se incluyen en el paquete del navegador. Solo admiten valo
 
 ## Migraciones
 
-La migración inicial `20261116033253_contigo.sql` ya está instalada aquí: **no volver a ejecutarla en este proyecto**. Para reproducir la instalación en otro proyecto vacío:
+El contenido del esquema inicial corresponde a `20261116033253_contigo.sql` y ya está instalado aquí: **no volver a ejecutarlo en este proyecto**. El historial alojado de esa instalación heredada usa una marca de versión distinta de la del archivo fuente. Antes de automatizar un `supabase db push`, inspeccionar el historial local y remoto y reconciliar esa entrada histórica con la administración del proyecto; no interpretar la diferencia como una instrucción para repetir la instalación inicial. Esta entrega no declara el historial heredado listo para un push genérico sin esa revisión. Para reproducir la instalación en otro proyecto vacío:
 
 1. Confirmar que el proyecto nuevo está disponible y que no contiene una instalación anterior que se deba conservar.
 2. Inspeccionar `supabase/migrations/` y aplicar las migraciones en su orden de nombre, únicamente al proyecto nuevo.
@@ -36,13 +36,31 @@ La migración inicial `20261116033253_contigo.sql` ya está instalada aquí: **n
 
 El seed, si se utiliza, contiene solo datos explícitamente ficticios. La presentación reproducible del navegador no necesita insertar usuarios de prueba en un backend real.
 
+## Migraciones aditivas de noviembre
+
+Aplicar en orden, después de la migración inicial y únicamente al proyecto `iqisdeyxlzpxtlbkyero`:
+
+1. `20261124205837_contigo_coronitas_20261124.sql`: reglas, procesos de atención, historial inmutable, galardones, validaciones y comunidad.
+2. `20261124205903_contigo_comunicacion_visual_20261124.sql`: comentarios, reportes, moderación, llamados privados y preferencias visuales.
+3. `20261124210142_contigo_dataset_diciembre_20261124.sql`: plantilla ficticia aislada, lectura pública limitada a ese conjunto y administración exclusiva por etiqueta.
+
+Los nombres y versiones de las tres migraciones nuevas coinciden con el historial alojado:
+
+| Versión | Nombre remoto |
+|---|---|
+| `20261124205837` | `contigo_coronitas_20261124` |
+| `20261124205903` | `contigo_comunicacion_visual_20261124` |
+| `20261124210142` | `contigo_dataset_diciembre_20261124` |
+
+La aplicación usa sus RPC autorizadas; no requiere claves nuevas ni servicios de pago. Las reglas y la regeneración se explican en la [guía de actualización](ACTUALIZACION_2026_11.md). La suscripción Realtime de llamados tiene una consulta periódica de respaldo; no habilita notificaciones con la app cerrada. Verificar las migraciones instaladas antes de repetir una operación: no volver a ejecutar la migración inicial sobre una base existente.
+
 ## Mantenimiento instalado
 
 La extensión `pg_cron` y el trabajo `medicita-contigo-maintenance` están activos en este proyecto nuevo, con programación `*/5 * * * *`. Ejecutan `public.run_maintenance()` desde el servidor para generar recordatorios internos y procesar vencimientos. El historial de aplicación queda en `public.system_runs` y el del programador en `cron.job_run_details`, accesibles al propietario, no al navegador público.
 
 La función es idempotente: no duplica un recordatorio por repetir la tarea. Las consultas de disponibilidad verifican la expiración de las ofertas directamente, de modo que una oferta vencida no bloquea un cupo permanentemente aunque una ejecución se retrase. El resultado de ejecuciones observadas se documenta en [PRUEBAS](PRUEBAS.md).
 
-La ejecución manual de comprobación finalizó sin error y registró cero ofertas vencidas y cero avisos internos en la base vacía. Esto verifica la ejecución de la tarea; todavía no acredita la recepción de recordatorios por usuarios reales.
+La comprobación inicial del 16 de noviembre finalizó sin error y registró cero ofertas vencidas y cero avisos internos en la base entonces vacía. Esto verifica la ejecución de la tarea; todavía no acredita la recepción de recordatorios por usuarios reales.
 
 ## Google OAuth nuevo
 
@@ -69,7 +87,7 @@ Un correo de acceso no es un recordatorio de cita. Los recordatorios implementad
 
 ## Primer administrador y otros roles
 
-Todos los registros públicos empiezan como paciente. Después de que el propietario ingrese por un proveedor verificado, confirmar su correo, UUID e identidad en Authentication → Users del proyecto nuevo. La asignación inicial se realiza desde una sesión administrativa del proyecto:
+En esta instalación ya existen administradores verificados; no se debe repetir la asignación inicial. El procedimiento siguiente es una referencia para una instalación nueva vacía. Todos los registros públicos empiezan como paciente. Después de que el propietario ingrese por un proveedor verificado, confirmar su correo, UUID e identidad en Authentication → Users del proyecto nuevo. La asignación inicial se realiza desde una sesión administrativa del proyecto:
 
 ```sql
 -- Sustituir únicamente por el UUID de la cuenta comprobada del proyecto nuevo.
