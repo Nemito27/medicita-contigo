@@ -1,0 +1,47 @@
+{
+  "url": "https://nemito27.github.io/medicita-contigo/",
+  "checked_at": "2026-11-24T18:13:46.781137-03:00",
+  "assets": [
+    {
+      "path": "./assets/con-tigo-fECRnYYW.png",
+      "http": 200,
+      "sha256": "7858cc39c429a2d1020aff91bc5a3f98216ce0693e0fe62bae56b7360b0992fd"
+    },
+    {
+      "path": "./assets/index-D5EGrDpg.css",
+      "http": 200,
+      "sha256": "6e15128d57abce079275ed2f149dd03d14cf5b664bb4df54f6808d25551a670d"
+    },
+    {
+      "path": "./assets/index-DoS97BEb.js",
+      "http": 200,
+      "sha256": "d4a8f8e1a6f73f67643b18e81bc31423369d2cbd4c184f5ee3b2b076016fda31"
+    }
+  ],
+  "entry_http": 200,
+  "december_links": {
+    "2026-12-03": 200,
+    "2026-12-04": 200,
+    "2026-12-05": 200
+  },
+  "result": "passed",
+  "dataset_days": {
+    "2026-12-03": {
+      "slots": 176,
+      "occupied": 120
+    },
+    "2026-12-04": {
+      "slots": 176,
+      "occupied": 126
+    },
+    "2026-12-05": {
+      "slots": 176,
+      "occupied": 114
+    }
+  },
+  "google_provider_active": true,
+  "scope": "Published static files match the tested production build; public dataset HTTPS read verified. No real Google browser session is asserted.",
+  "implementation_merge": "e4e902c94ff3af6a789c88fe493ab7b9285cce2e",
+  "ci_run": "https://github.com/Nemito27/medicita-contigo/actions/runs/45488747884",
+  "pull_request": "https://github.com/Nemito27/medicita-contigo/pull/1"
+}

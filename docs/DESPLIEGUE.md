@@ -2,11 +2,13 @@
 
 ## Estado del destino
 
-El código ya está subido al repositorio público independiente [Nemito27/medicita-contigo](https://github.com/Nemito27/medicita-contigo); primer commit de fuente: `b6015f6`. GitHub Pages está configurado con **GitHub Actions** como origen, confirmado mediante la API del repositorio nuevo. La primera publicación con esa configuración está pendiente de comprobar; no se presenta una dirección prevista como un despliegue terminado. No usar la URL de Medicita original como destino de esta entrega.
+La versión **Medicita Contigo 2.1.0** está publicada en **https://nemito27.github.io/medicita-contigo/**, desde el repositorio público [Nemito27/medicita-contigo](https://github.com/Nemito27/medicita-contigo). El 24 de noviembre de 2026, el [workflow de publicación](https://github.com/Nemito27/medicita-contigo/actions/runs/45488747884) aprobó instalación, 133 pruebas (dos omisiones esperadas), compilación y despliegue. Se comprobó HTTP 200 y la coincidencia SHA-256 de JavaScript, CSS y mascota con la compilación probada; las tres jornadas de diciembre y el conjunto ficticio del servidor también respondieron correctamente. Ver [evidencia](evidencia/publicacion-2.1.json). GitHub Pages conserva **GitHub Actions** como origen.
+
+La implementación se revisó en [la solicitud de cambios #1](https://github.com/Nemito27/medicita-contigo/pull/1), sobre la rama `feature/coronitas-visual-comunidad`, antes de integrarse a `main`. El commit de integración es `e4e902c94ff3af6a789c88fe493ab7b9285cce2e`. Las notas siguientes sobre creación y activación corresponden a la configuración inicial de noviembre; esos pasos están resueltos.
 
 La conexión no permitió crear el repositorio y el propietario lo creó vacío. Esa restricción no se resolvió escribiendo en el repositorio original. El remoto del checkout nuevo apunta exclusivamente a `Nemito27/medicita-contigo`.
 
-La activación inicial de Pages por API fue rechazada con HTTP 403, `Resource not accessible by integration`. El propietario resolvió ese paso eligiendo **GitHub Actions** en [Settings → Pages del repositorio nuevo](https://github.com/Nemito27/medicita-contigo/settings/pages). No sigue pendiente volver a habilitarlo. La primera CI aprobó pruebas y compilación, pero su publicación falló antes de que Pages estuviera configurado; un nuevo commit ejecuta el workflow con la configuración actual. Ninguno de estos pasos modifica Medicita original.
+La activación inicial de Pages por API fue rechazada con HTTP 403, `Resource not accessible by integration`. El propietario resolvió ese paso eligiendo **GitHub Actions** en [Settings → Pages del repositorio nuevo](https://github.com/Nemito27/medicita-contigo/settings/pages). No sigue pendiente volver a habilitarlo. La primera CI aprobó pruebas y compilación, pero su publicación falló antes de que Pages estuviera configurado. La entrega inicial y esta actualización se publicaron posteriormente con éxito. Ninguno de estos pasos modifica Medicita original.
 
 ## GitHub Actions y Pages
 

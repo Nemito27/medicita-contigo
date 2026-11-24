@@ -14,6 +14,7 @@ Las pruebas de la entrega inicial se conservan en las secciones siguientes como 
 | Nuevas vistas y flujos | Seis grupos, diez resúmenes de flujo y 44 comprobaciones de interfaz aprobados; cero errores JavaScript o de consola |
 | Dataset instalado | 528 cupos futuros, 120/126/114 reservas por jornada; ocho boxes, 12 profesionales, 120 pacientes y tres actores técnicos ficticios |
 | Smoke SQL del backend actualizado | Aprobado con transacción revertida; agenda real anterior conservada |
+| Publicación 2.1.0 | [CI y despliegue aprobados](https://github.com/Nemito27/medicita-contigo/actions/runs/45488747884); HTTP 200 y recursos idénticos a la compilación probada; [evidencia](evidencia/publicacion-2.1.json) |
 
 El resumen sin credenciales ni identidades reales está en [evidencia de Chromium 2.1](evidencia/chromium-update-summary.json). La lectura del conjunto ficticio usó el servidor real a través del puente HTTPS verificado de Python por una limitación de certificados del Chromium gestionado; el JSON de evidencia registra ese alcance.
 

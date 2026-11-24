@@ -6,6 +6,8 @@ Aplicación independiente de gestión administrativa de reservas, cancelaciones,
 
 Es un prototipo avanzado para evaluación y presentaciones. Actualmente no está conectado con agendas oficiales de CESFAM, Telesalud ni plataformas del Estado. Una reserva o cancelación afecta únicamente a este sistema.
 
+[Abrir la aplicación publicada](https://nemito27.github.io/medicita-contigo/) · [Código y revisión de la actualización](https://github.com/Nemito27/medicita-contigo/pull/1)
+
 ## Actualización de noviembre de 2026
 
 La actualización incorpora **Mis coronitas** (niveles, seis misiones, galardones e historial), **Comunidad** opcional con alias, **Personas y coronitas** para administración, comentarios moderados de boxes y llamados visuales privados con respuesta. Las coronitas son simbólicas y no modifican la prioridad de atención.
