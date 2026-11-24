@@ -2,6 +2,8 @@
 import {DEMO_KEY,ACTORS,clone,seed,actorProfile,fullName,iso,time,dayKey,addDays,maintenance,isAvailable,slotEnabled} from './demo/model.js';
 import {execute} from './demo/operations.js';
 import {report} from './demo/report.js';
+import {initializeRewards,syncRewards,myRewards,peopleRewards,community,executeRewards,REWARD_RPCS} from './demo/rewards.js';
+import {initializeCommunications,boxCalls,closeFinishedCalls,executeCommunications,COMMUNICATION_RPCS} from './demo/communications.js';
 
 export const DEMO_STORAGE_KEY=DEMO_KEY;
 let queue=Promise.resolve();
@@ -37,29 +39,39 @@ function snapshot(state,actor,input,now){
     report:['admin','reception','supervisor'].includes(user.role)?report(state,f,now):null,
     pagination:{offset:f.offset,limit:f.limit,total:filtered.length,has_more:filtered.length>f.offset+f.limit},
     demonstration:true,simulated_now:iso(now),revision:state.revision,
+    dataset_tag:state.dataset_tag||null,rewards:myRewards(state,actor),
+    people_rewards:user.role==='admin'?peopleRewards(state,actor,{p_query:f.people_query||'',p_level:f.people_level||'',p_order:f.people_order||'crowns_desc',p_offset:f.people_offset||0,p_limit:25}):null,
+    community:community(state,actor),box_calls:boxCalls(state,actor,{p_pending_only:true},now),
   });
 }
 
-export function createDemoService({storage=browserStorage(),now=()=>new Date()}={}){
+export function createDemoService({storage=browserStorage(),now=()=>new Date(),dataset=null}={}){
+  if(dataset&&(!validState(dataset)||dataset.dataset_tag!=='medicita-december-2026-v1'||dataset.is_demo!==true||!dataset.profiles.every(p=>p.is_demo===true&&String(p.email||'').endsWith('@example.invalid'))))throw Error('El conjunto de demostración no es válido o contiene identidades ajenas a la simulación.');
+  const storageKey=dataset?`${DEMO_KEY}:${dataset.dataset_tag}`:DEMO_KEY;
+  const makeSeed=at=>{const value=dataset?clone(dataset):seed(at);value.clock_offset_ms=0;if(dataset)for(const o of value.offers.filter(o=>o.status==='pending')){o.created_at=iso(at);o.expires_at=iso(Math.min(time(at)+value.settings.offer_minutes*60000,time(value.slots.find(s=>s.id===o.slot_id).starts_at)));}initializeRewards(value,at);initializeCommunications(value);value.feature_version=1;return value;};
   const listeners=new Set();let actor='patient-a',destroyed=false;
   const baseNow=()=>{const value=typeof now==='function'?now():now;const result=new Date(value);if(!Number.isFinite(result.getTime()))throw Error('La fecha de la demostración no es válida.');return result;};
-  const read=()=>{let value;try{value=JSON.parse(storage.getItem(DEMO_KEY))}catch{}if(!validState(value)){value=seed(baseNow());storage.setItem(DEMO_KEY,JSON.stringify(value));}return value;};
+  const read=()=>{let value;try{value=JSON.parse(storage.getItem(storageKey))}catch{}if(!validState(value)||(dataset&&value.dataset_tag!==dataset.dataset_tag)){value=makeSeed(baseNow());storage.setItem(storageKey,JSON.stringify(value));}else if(value.feature_version!==1){initializeRewards(value,new Date(time(baseNow())+Number(value.clock_offset_ms||0)));initializeCommunications(value);value.feature_version=1;storage.setItem(storageKey,JSON.stringify(value));}return value;};
   const clock=state=>new Date(baseNow().getTime()+Number(state.clock_offset_ms||0));
-  try{const saved=storage.getItem(`${DEMO_KEY}:actor`);if(ACTORS.includes(saved))actor=saved}catch{}
-  let channel;try{if(globalThis.window&&typeof BroadcastChannel!=='undefined'){channel=new BroadcastChannel(`${DEMO_KEY}:updates`);channel.onmessage=()=>emit();}}catch{}
+  const actorIds=()=>read().profiles.map(p=>p.id);
+  try{const saved=storage.getItem(`${storageKey}:actor`);if(actorIds().includes(saved))actor=saved}catch{}
+  let channel;try{if(globalThis.window&&typeof BroadcastChannel!=='undefined'){channel=new BroadcastChannel(`${storageKey}:updates`);channel.onmessage=()=>emit();}}catch{}
   function emit(){if(!destroyed)for(const listener of listeners){try{listener()}catch{}}}
-  function write(state){state.revision=Number(state.revision||0)+1;try{storage.setItem(DEMO_KEY,JSON.stringify(state))}catch{throw Error('No pudimos guardar la demostración en este navegador. Revisa el espacio y la privacidad del almacenamiento.');}emit();try{channel?.postMessage({revision:state.revision})}catch{}}
-  const storageEvent=event=>{if(event.key===DEMO_KEY)emit()};
+  function write(state){state.revision=Number(state.revision||0)+1;try{storage.setItem(storageKey,JSON.stringify(state))}catch{throw Error('No pudimos guardar la demostración en este navegador. Revisa el espacio y la privacidad del almacenamiento.');}emit();try{channel?.postMessage({revision:state.revision})}catch{}}
+  const storageEvent=event=>{if(event.key===storageKey)emit()};
   globalThis.window?.addEventListener('storage',storageEvent);
-  async function locked(task){return serialize(()=>globalThis.window&&globalThis.navigator?.locks?.request?globalThis.navigator.locks.request(`${DEMO_KEY}:lock`,async()=>task()):task());}
+  async function locked(task){return serialize(()=>globalThis.window&&globalThis.navigator?.locks?.request?globalThis.navigator.locks.request(`${storageKey}:lock`,async()=>task()):task());}
   async function transaction(name,args={}){
     const requestActor=actor;
     return locked(()=>{
       const state=clone(read()),currentNow=clock(state);
+      initializeRewards(state,currentNow);initializeCommunications(state);
       const maintained=maintenance(state,currentNow);
       if(name==='get_snapshot'){if(maintained)write(state);return snapshot(state,requestActor,args.p_filters||{},currentNow)}
-      const result=execute(state,requestActor,name,args,currentNow);
-      if(!['compatible_candidates','get_report'].includes(name)||maintained)write(state);
+      const result=REWARD_RPCS.has(name)?executeRewards(state,requestActor,name,args,currentNow):COMMUNICATION_RPCS.has(name)?executeCommunications(state,requestActor,name,args,currentNow):execute(state,requestActor,name,args,currentNow);
+      closeFinishedCalls(state,requestActor,currentNow);
+      syncRewards(state,currentNow);
+      if(!['compatible_candidates','get_report','get_my_rewards','get_reward_history','get_people_rewards','get_reward_community','get_room_comments','get_comment_moderation','get_box_calls','get_public_box_calls'].includes(name)||maintained)write(state);
       return clone(result);
     });
   }
@@ -67,9 +79,11 @@ export function createDemoService({storage=browserStorage(),now=()=>new Date()}=
     kind:'demo',
     load:(filters={})=>transaction('get_snapshot',{p_filters:filters}),
     rpc:(name,args={})=>transaction(name,args),
-    setActor(next){if(!ACTORS.includes(next))throw Error('Elige un personaje disponible de la demostración.');actor=next;try{storage.setItem(`${DEMO_KEY}:actor`,actor)}catch{}emit();return actor;},
+    setActor(next){if(!actorIds().includes(next))throw Error('Elige un personaje disponible de la demostración.');actor=next;try{storage.setItem(`${storageKey}:actor`,actor)}catch{}emit();return actor;},
     getActor:()=>actor,
-    reset:()=>locked(()=>{const state=seed(baseNow());actor='patient-a';try{storage.setItem(`${DEMO_KEY}:actor`,actor)}catch{}write(state);return snapshot(state,actor,{},clock(state));}),
+    getActors:()=>read().profiles.map(p=>({id:p.id,label:fullName(p),role:p.role})),
+    getBoxCalls:()=>transaction('get_box_calls',{p_pending_only:true}),
+    reset:()=>locked(()=>{const state=makeSeed(baseNow());actor='patient-a';try{storage.setItem(`${storageKey}:actor`,actor)}catch{}write(state);return snapshot(state,actor,{},clock(state));}),
     subscribe(listener){listeners.add(listener);return ()=>listeners.delete(listener)},
     getClock:()=>iso(clock(read())),
     advanceTo:value=>locked(()=>{const state=clone(read()),target=time(value);if(!Number.isFinite(target)||target<time(clock(state)))throw Error('El reloj de demostración solo puede avanzar. Reinicia para volver al comienzo.');state.clock_offset_ms=target-baseNow().getTime();maintenance(state,clock(state));write(state);return iso(clock(state));}),

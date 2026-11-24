@@ -2,7 +2,38 @@
 
 Fecha de registro: **16 de noviembre de 2026**. Estos resultados pertenecen a Medicita Contigo y a su backend nuevo. Las pruebas de Medicita original no se utilizan como evidencia automática de esta versión.
 
-## Resultados registrados
+## Actualización del 24 de noviembre de 2026
+
+Las pruebas de la entrega inicial se conservan en las secciones siguientes como evidencia histórica. No se atribuyen automáticamente a los módulos nuevos. El registro actual de Coronitas, comentarios, llamados visuales y jornadas ficticias se encuentra en [Actualización de noviembre](ACTUALIZACION_2026_11.md#verificación-de-la-actualización).
+
+| Comprobación actual | Resultado |
+|---|---|
+| Node/PGlite | 135 pruebas: 133 aprobadas y dos omisiones justificadas por ausencia del árbol original protegido |
+| Compilación 2.1.0 | Aprobada |
+| Regresión de navegador anterior | 110 comprobaciones de interfaz y flujos de reservas, recuperación, CSV, QR, privacidad y foco aprobados |
+| Nuevas vistas y flujos | Seis grupos, diez resúmenes de flujo y 44 comprobaciones de interfaz aprobados; cero errores JavaScript o de consola |
+| Dataset instalado | 528 cupos futuros, 120/126/114 reservas por jornada; ocho boxes, 12 profesionales, 120 pacientes y tres actores técnicos ficticios |
+| Smoke SQL del backend actualizado | Aprobado con transacción revertida; agenda real anterior conservada |
+
+El resumen sin credenciales ni identidades reales está en [evidencia de Chromium 2.1](evidencia/chromium-update-summary.json). La lectura del conjunto ficticio usó el servidor real a través del puente HTTPS verificado de Python por una limitación de certificados del Chromium gestionado; el JSON de evidencia registra ese alcance.
+
+El recorrido nuevo reproducible está en `tests/update-browser-smoke.py`. Usa solo datos inventados, conserva los borradores al recibir llamados, comprueba el aislamiento entre personajes, representa texto HTML como texto seguro y revisa móvil, tablet y computador. Las comprobaciones PostgreSQL y de acceso real al servidor tienen evidencias separadas.
+
+```sh
+# Mantener la aplicación servida en otro terminal.
+CONTIGO_QA_URL=http://127.0.0.1:5174/ python tests/update-browser-smoke.py
+```
+
+En PowerShell:
+
+```powershell
+$env:CONTIGO_QA_URL = "http://127.0.0.1:5174/"
+py tests/update-browser-smoke.py
+```
+
+`CONTIGO_UPDATE_QA_OUTPUT` permite elegir la carpeta de capturas y `results.json`; el valor por defecto es `work/update-browser-qa/`, excluido de Git. `CONTIGO_QA_FLOWS` permite seleccionar grupos separados por coma (`rewards,comments,visual_calls,preferences,december,responsive`). El grupo de diciembre consulta la plantilla pública ficticia instalada en el proyecto; no transforma esa lectura en una prueba de operaciones clínicas reales. No se inyectan credenciales ni sesiones de Google.
+
+## Resultados registrados el 16 de noviembre
 
 | Comprobación | Entorno | Resultado |
 |---|---|---|

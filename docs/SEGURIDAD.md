@@ -1,6 +1,6 @@
 # Seguridad, datos personales y operación
 
-Fecha de revisión documental: **16 de noviembre de 2026**. Este documento describe decisiones técnicas y asuntos que debe resolver el responsable del eventual piloto; no acredita certificación clínica, cumplimiento legal integral ni una auditoría externa.
+Fecha de revisión documental: **24 de noviembre de 2026**. Los avisos y resultados de la instalación inicial se conservan fechados por separado. Este documento describe decisiones técnicas y asuntos que debe resolver el responsable del eventual piloto; no acredita certificación clínica, cumplimiento legal integral ni una auditoría externa.
 
 ## Acceso y mínimo privilegio
 
@@ -53,7 +53,7 @@ No se guardan respuestas privadas en un service worker. La app no confirma reser
 
 Revisar dependencias y lockfile, asesores de Supabase, límites de frecuencia, logs sin tokens, expiración de sesiones y pruebas de acceso entre cuentas. La ausencia de hallazgos en una prueba no demuestra ausencia de vulnerabilidades.
 
-## Asesores del proyecto nuevo
+## Asesores de la instalación inicial (16 de noviembre)
 
 Después de aplicar la migración se comprobaron las 19 tablas públicas con RLS y se revisaron estos avisos del asesor de seguridad:
 
@@ -63,6 +63,33 @@ Después de aplicar la migración se comprobaron las 19 tablas públicas con RLS
 | `authenticated_security_definer_function_executable`, 18 RPC públicas | La API necesita operaciones transaccionales privilegiadas que vuelven a comprobar identidad, propiedad y rol. Solo se conceden las RPC de la lista explícita; los helpers internos permanecen en esquema privado. El aviso requiere revisar cada función y sus permisos al cambiar el modelo, no se interpreta como una autorización para exponer nuevas funciones. [Guía de revisión](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable) |
 
 No se presenta el asesor como una revisión sin avisos ni como una auditoría externa. Las pruebas de acceso de pacientes, recepción y supervisión complementan esta revisión; no sustituyen una evaluación antes de un piloto con datos reales.
+
+## Revisión del backend actualizado (24 de noviembre)
+
+Se aplicaron las tres migraciones aditivas únicamente en el proyecto de Contigo. La revisión del servidor y el smoke con transacción revertida comprobaron recompensas, correcciones, comentarios, preferencias, llamados y el conjunto ficticio. Las filas temporales del smoke se revirtieron. Se conservaron los perfiles y la agenda reales anteriores.
+
+Los asesores de seguridad mantienen avisos que requieren interpretar el diseño de acceso, no abrir permisos para silenciarlos:
+
+| Aviso actual | Alcance y control |
+|---|---|
+| Dos funciones privilegiadas ejecutables por anónimos | `get_demo_dataset` solo devuelve la plantilla ficticia fija activa; `get_public_box_calls` solo devuelve turno opaco, box, fecha y estado. No aceptan contenido arbitrario ni devuelven identidades privadas. |
+| Funciones privilegiadas ejecutables por autenticados | Las RPC autorizadas verifican identidad, propietario, rol y estados en el servidor; las funciones auxiliares permanecen privadas. El asesor informó 42 avisos de esta clase, revisados como parte de la API transaccional. |
+| RLS sin política de lectura de `system_runs` | Denegación por defecto para clientes; las ejecuciones son internas del servidor. |
+| Protección de contraseñas comprometidas desactivada | La interfaz actual usa Google y no ofrece ingreso por contraseña. Revisar este control antes de habilitar contraseñas; no se presenta el aviso como resuelto ni se contrata un plan adicional para ocultarlo. |
+
+No se declara una auditoría externa, ausencia total de avisos ni una certificación a partir de estas comprobaciones. Los detalles y límites de las pruebas están en [la guía de actualización](ACTUALIZACION_2026_11.md).
+
+## Recompensas, comentarios y llamados
+
+Los clientes no reciben escritura sobre saldos ni facultad para crear premios. El saldo se deriva del historial inmutable; las restricciones únicas y los procesos de atención conservados impiden repetir premios al confirmar o reagendar. Los ajustes exigen administrador y motivo. Las correcciones de asistencia agregan movimientos compensatorios y auditoría; no eliminan el original. La comunidad devuelve exclusivamente alias autorizado, avatar de catálogo, saldo y nivel. Ninguna recompensa participa en la asignación clínica de cupos.
+
+Los comentarios se validan en el servidor: límite de 500 caracteres, filtro configurable con evasiones comunes, 30 segundos entre publicaciones, cinco por hora y rechazo de duplicados durante 24 horas. La autoría y las ventanas de edición se comprueban en el servidor. Los reportes son privados para administración y las decisiones quedan auditadas. El texto se escapa al representarlo. El filtro tiene límites y se complementa con revisión manual.
+
+Los llamados requieren una llegada registrada y personal autorizado; el servidor deriva el destinatario y el box. La cuenta paciente consulta solo sus llamados y responde a ellos. Supervisión no recibe llamados ni identidades individuales. La pantalla pública obtiene un turno opaco y box, nunca un nombre ni motivo. Las suscripciones se cierran al cambiar de identidad y las respuestas tardías se descartan; la consulta periódica de llamados no reemplaza formularios abiertos.
+
+La plantilla `medicita-december-2026-v1` permanece en `demonstration_sets`, con RLS y operaciones de administración limitadas a esa etiqueta. No crea cuentas Auth ni escribe pacientes, cupos o citas ficticias en tablas reales. Su lectura anónima solo permite el contenido fijo de demostración. El selector de personajes pertenece al adaptador local; no eleva permisos de una cuenta real. Regenerar o retirar la plantilla no borra copias ya guardadas por otros navegadores.
+
+Las preferencias locales solo contienen valores de accesibilidad y claves pendientes de sincronización. Un nuevo dispositivo no sobrescribe preferencias remotas con valores por defecto. No se almacenan diagnósticos ni credenciales en ese registro.
 
 ## Secretos e incidentes
 

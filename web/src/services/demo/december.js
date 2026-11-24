@@ -1,0 +1,44 @@
+// Fixed, unmistakably fictitious data. No network or authenticated user records.
+import {preferences,iso,time,chileTime,addDays,compatible} from './model.js';
+export const DECEMBER_TAG='medicita-december-2026-v1';
+export const DECEMBER_DAYS=['2026-12-03','2026-12-04','2026-12-05'];
+export function generateDecemberDataset({asOf='2026-11-24T12:00:00.000Z'}={}) {
+  const created=iso(asOf),marker={is_demo:true,dataset_tag:DECEMBER_TAG};
+  const row=value=>({...value,...marker});
+  const names=['Ana','Luis','Camila','Diego','Elena','Felipe','Gabriela','Hugo','Isabel','Javier','Karla','León','María','Nicolás','Olivia','Pablo','Rosa','Sergio','Teresa','Víctor'];
+  const profiles=Array.from({length:120},(_,i)=>row({id:i===0?'patient-a':i===1?'patient-b':`demo-patient-${String(i+1).padStart(3,'0')}`,full_name:names[i%names.length],last_name:`Ejemplo ${String(i+1).padStart(3,'0')}`,email:`paciente-${i+1}@example.invalid`,phone:'',role:'patient',onboarded:i%3!==0,preferences:{...preferences(),visual_mode:i%7===0,vibration_enabled:false},created_at:'2024-01-01T12:00:00.000Z',updated_at:created,community_opt_in:i<12,community_alias:`${names[i%names.length]} del jardín`,community_avatar:['heart','crown','leaf','sun','star','flower','contigo'][i%7]}));
+  for(const [id,name,role] of [['admin','Administración ficticia','admin'],['reception','Recepción ficticia','reception'],['supervisor','Supervisión ficticia','supervisor']])profiles.push(row({id,full_name:name,last_name:'Demo',email:`${id}@example.invalid`,phone:'',role,onboarded:true,preferences:preferences(),created_at:'2024-01-01T12:00:00.000Z'}));
+  const services=[['general','Medicina general'],['dental','Odontología'],['nursing','Enfermería'],['midwife','Matronería'],['kine','Kinesiología']].map(([id,name])=>row({id:`service-${id}`,name,duration_minutes:30,active:true}));
+  const mapping=[0,0,1,1,2,2,3,4],replacement=new Map([[0,8],[3,9],[5,10],[6,11]]);
+  const rooms=mapping.map((s,i)=>row({id:`demo-room-${i+1}`,name:`Box ${i+1}`,service_id:services[s].id,specialty:services[s].name,status:'free',active:true,updated_at:created}));
+  const professionalServices=[...mapping,0,1,2,3];
+  const professionals=professionalServices.map((s,i)=>row({id:`demo-professional-${i+1}`,full_name:`Profesional ficticio ${String(i+1).padStart(2,'0')}`,service_id:services[s].id,active:true}));
+  const state={version:2,revision:0,clock_offset_ms:0,dataset_tag:DECEMBER_TAG,is_demo:true,label:'Demostración ficticia · diciembre de 2026',timezone:'America/Santiago',demonstration:true,created_at:created,center:row({id:'center-demo-december',name:'Centro ficticio Medicita Contigo',address:'Datos de prueba · sin vínculo institucional',independent:true}),settings:{cancellation_notice_minutes:0,no_show_grace_minutes:15,offer_minutes:1440,early_cancellation_hours:24},profiles,services,rooms,professionals,slots:[],appointments:[],waiting:[],offers:[],notifications:[],notification_deliveries:[],appointment_events:[],audit_log:[],cancellations:[],schedules:[],schedule_exceptions:[]};
+  for(let room=0;room<8;room++)for(const day of [4,5,6])for(const period of ['morning','afternoon']){const professional=period==='afternoon'&&replacement.has(room)?replacement.get(room):room;state.schedules.push(row({id:`schedule-${room}-${day}-${period}`,room_id:rooms[room].id,professional_id:professionals[professional].id,weekday:day,start_time:period==='morning'?'08:00':'14:00',end_time:period==='morning'?'13:00':'20:00',active:true}));}
+  const appointment=(id,slot,patient,status,extra={})=>row({id,care_process_id:id,slot_id:slot.id,patient_id:patient,status,checkin_token:`credential-${id}`,created_at:'2026-11-10T12:00:00.000Z',confirmed_at:status==='confirmed'?'2026-11-24T11:00:00.000Z':null,arrived_at:null,completed_at:null,cancelled_at:null,no_show_at:null,cancellation_reason:null,released_at:null,...extra});
+  for(const [d,key] of DECEMBER_DAYS.entries()) {
+    const occupied=[120,126,114][d];let booked=0;
+    for(let interval=0;interval<22;interval++)for(let room=0;room<8;room++) {
+      const minutes=8*60+interval*30+(interval>=10?60:0),professional=interval>=10&&replacement.has(room)?replacement.get(room):room,service=services[mapping[room]],index=interval*8+room;
+      const start=chileTime(key,Math.floor(minutes/60),minutes%60);
+      const slot=row({id:`demo-slot-${key}-${String(index+1).padStart(3,'0')}`,dataset_section:'december',room_id:rooms[room].id,professional_id:professionals[professional].id,service_id:service.id,specialty:service.name,professional:professionals[professional].full_name,starts_at:start,ends_at:iso(time(start)+30*60000),duration_minutes:30,blocked:false,created_at:created});
+      state.slots.push(slot);
+      if(Math.floor((index+1)*occupied/176)>Math.floor(index*occupied/176)){const patient=profiles[(booked+d*37)%120];state.appointments.push(appointment(`demo-booking-${key}-${String(booked+1).padStart(3,'0')}`,slot,patient.id,booked%3===0?'reserved':'confirmed'));booked++;}
+    }
+  }
+  // These are explicitly historical fictional validations, never future attendances.
+  for(const [patientIndex,count] of [20,10,5,3,1].entries())for(let n=0;n<count;n++) {
+    const key=addDays('2026-11-20',-(patientIndex*25+n)*2),start=chileTime(key,10),slot=row({id:`demo-history-slot-${patientIndex}-${n}`,dataset_section:'history',room_id:rooms[0].id,professional_id:professionals[0].id,service_id:services[0].id,specialty:services[0].name,professional:professionals[0].full_name,starts_at:start,ends_at:iso(time(start)+30*60000),duration_minutes:30,blocked:false,created_at:iso(time(start)-8*86400000)});
+    state.slots.push(slot);const a=appointment(`demo-history-booking-${patientIndex}-${n}`,slot,profiles[patientIndex].id,'completed',{created_at:iso(time(start)-7*86400000),confirmed_at:iso(time(start)-6*86400000),arrived_at:iso(time(start)-5*60000),completed_at:slot.ends_at,validated_by:'reception'});state.appointments.push(a);state.appointment_events.push(row({id:`history-complete-${patientIndex}-${n}`,appointment_id:a.id,slot_id:slot.id,patient_id:a.patient_id,actor_id:'reception',event:'completed',created_at:a.completed_at,detail:'Atención histórica ficticia validada por recepción'}));
+  }
+  const free=state.slots.filter(s=>s.dataset_section==='december'&&!state.appointments.some(a=>a.slot_id===s.id));
+  for(const [i,slot] of free.slice(0,6).entries()){const patient=profiles[110+i],released='2026-11-23T12:00:00.000Z',a=appointment(`demo-cancelled-${i+1}`,slot,patient.id,'cancelled',{cancelled_at:released,released_at:released,cancellation_reason:'Cambio de horario ficticio'});state.appointments.push(a);state.cancellations.push(row({id:`demo-cancellation-${i+1}`,appointment_id:a.id,slot_id:slot.id,patient_id:patient.id,released_at:released,reason:a.cancellation_reason,notice_minutes:Math.floor((time(slot.starts_at)-time(released))/60000),reassigned_at:null,used_at:null}));}
+  // A real compatible queue and pending proposals; no change to the occupied totals.
+  for(const slot of free){if(state.offers.length===3)break;const old=state.appointments.find(a=>['reserved','confirmed'].includes(a.status)&&state.slots.find(s=>s.id===a.slot_id).service_id===slot.service_id&&time(state.slots.find(s=>s.id===a.slot_id).starts_at)>time(slot.starts_at)&&!state.waiting.some(w=>w.patient_id===a.patient_id)&&!state.appointments.some(b=>b.patient_id===a.patient_id&&['reserved','confirmed'].includes(b.status)&&time(state.slots.find(s=>s.id===b.slot_id).starts_at)<time(slot.ends_at)&&time(state.slots.find(s=>s.id===b.slot_id).ends_at)>time(slot.starts_at)));if(!old)continue;
+    const w=row({id:`demo-wait-${state.waiting.length+1}`,patient_id:old.patient_id,service_id:slot.service_id,specialty:slot.specialty,earliest:chileTime(DECEMBER_DAYS[0],0),latest:chileTime(DECEMBER_DAYS[2],23,59),preferred_days:[4,5,6],preferred_period:'any',old_appointment_id:old.id,receive_offers:true,created_at:'2026-11-22T12:00:00.000Z'});state.waiting.push(w);
+    if(compatible(state,slot,new Date(created)).some(x=>x.id===w.id))state.offers.push(row({id:`demo-offer-${state.offers.length+1}`,patient_id:w.patient_id,slot_id:slot.id,old_appointment_id:old.id,status:'pending',created_at:created,expires_at:iso(Math.min(time(created)+86400000,time(slot.starts_at))),responded_at:null}));
+  }
+  state.audit_log.push(row({id:'demo-dataset-created',actor_id:'admin',event:'demo_dataset_created',created_at:created,detail:'Conjunto exclusivamente ficticio, aislado de cuentas y agendas reales'}));
+  for(const p of profiles)state.notifications.push(row({id:`demo-welcome-${p.id}`,patient_id:p.id,kind:'welcome',title:'Demostración ficticia',body:'Este personaje, sus horas y sus coronitas son datos de prueba.',created_at:created,read_at:null,appointment_id:null,offer_id:null,dedupe_key:`demo-welcome-${p.id}`}));
+  return state;
+}

@@ -1,6 +1,6 @@
 /* Cache public static files only. Never cache API, authenticated snapshots,
  * OAuth callbacks, forms, or patient-specific HTML. */
-const CACHE='medicita-contigo-public-v2';
+const CACHE='medicita-contigo-public-v3';
 const BASE=new URL('./',self.location.href);
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll([new URL('offline.html',BASE),new URL('offline.css',BASE)])).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('medicita-contigo-public-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim()));});

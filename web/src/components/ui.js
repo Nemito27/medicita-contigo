@@ -1,6 +1,7 @@
 export {dateLabel, dayKey, chileInput, chileToIso, addDays} from '../utils/date.js';
 export const esc = value => String(value ?? '').replace(/[&<>"']/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]));
 const paths = {
+  crown:'m2 6 5 5 5-7 5 7 5-5-3 13H5ZM6 22h12',eye:'M2 12s3-7 10-7 10 7 10 7-3 7-10 7S2 12 2 12Zm13 0a3 3 0 1 1-6 0 3 3 0 0 1 6 0',
   home:'m3 10 9-7 9 7v11h-6v-7H9v7H3Z', calendar:'M5 5h14v16H3V5h2M7 3v4m10-4v4M3 11h18',
   bell:'M5 17h14l-2-3V9a5 5 0 0 0-10 0v5Zm5 3h4', user:'M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0M4 21v-2a8 8 0 0 1 16 0v2',
   users:'M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0M3 21v-2a7 7 0 0 1 14 0v2m2-14a3 3 0 0 1 0 6m1 3a5 5 0 0 1 2 4',
